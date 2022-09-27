@@ -124,7 +124,7 @@ The code performs the following:
 
 Use the AWS CLI to create the Lambda function:
 
-1) Download the **union.py** file from the [AWS Labs GitHub repo](https://github.com/awslabs/aws-lambda-ddns-function).
+1) Download the **union.py** file from this [repo](https://github.com/caedh121/dyndns).
 
 2) Create a ZIP archive **union.zip** for **union.py**
 
