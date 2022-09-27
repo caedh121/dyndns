@@ -230,5 +230,7 @@ In this step, you verify that your Lambda function successfully updated the Rout
 
 The python3 version of the lambda introduces some new features:
 
-* Has SNS notifications for errors.  NOTE: The cloudformation template will setup an SNS topic named DDNSAlerts.  Manually setup the subscriptions you want to this topic.
-* Tests have been added to test the lambda, and any changes.  Run 'tox' command in bash shell to run tests and view coverage report in htmlcov directory
+* Check the original repo for the SNS setup template  and tox test code.
+https://github.com/aws-samples/aws-lambda-ddns-function/blob/master/ddns.template
+
+Thanks again to the authors.
