@@ -168,7 +168,7 @@ aws ec2 create-dhcp-options --dhcp-configuration "Key=domain-name-servers,Values
 ```
 aws associate-dhcp-options --dhcp-options-id <DhcpOptiosId> --vpc-id <the VPC id>
 ```
-Note: You can use the same DHCP options set for all the VPCs of the account located in the same region.
+Note: You can use the same DHCP options set for all the VPCs in the same region.
 ##### Step 6 – Launching the EC2 instance and validating results
 
 In this step, you launch an EC2 instance and verify that the function executed successfully.
