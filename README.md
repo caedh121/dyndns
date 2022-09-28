@@ -161,15 +161,14 @@ To create the private hosted zone in Route 53, follow the steps outlined in [Cre
 ##### Step 5 – Create a DHCP options set and associate it with the VPC
 
 In this step, you create a new DHCP options set, and set the domain to be that of your private hosted zone.
-
-1) Follow the steps outlined in [Creating a DHCP Options Set](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html#CreatingaDHCPOptionSet) to create a new set of DHCP options.
-
-2) In the **Create DHCP options set** dialog box, give the new options set a name, set **Domain name** to the name of the private hosted zone that you created in Route 53, and set **Domain name servers** to “AmazonProvidedDNS”.  Choose **Yes, Create**.
-
-![DHCP Option Set](https://github.com/awslabs/aws-lambda-ddns-function/blob/master/images/step-5-4.png)
-
-3) Next, follow the steps outlined in Changing the Set of DHCP Options a VPC Uses to update the VPC to use the newly-created DHCP options set.
-
+```
+aws ec2 create-dhcp-options --dhcp-configuration "Key=domain-name-servers,Values=AmazonProvidedDNS" "Key=domain-name,Values=ddnslambda.com" --tag-specifications ResourceType='dhcp-options',Tags='[{Key=Name,Value="ddndns-option-set"},{Key=Createdby,Value="Adrian"}]'
+```
+3) Next, update the intended VPC to use the newly-created DHCP options set. The previous command will return the DhcpOptionsId of the newly created DHCP options set
+```
+aws associate-dhcp-options --dhcp-options-id <DhcpOptiosId> --vpc-id <the VPC id>
+```
+Note: You can use the same DHCP options set for all the VPCs of the account located in the same region.
 ##### Step 6 – Launching the EC2 instance and validating results
 
 In this step, you launch an EC2 instance and verify that the function executed successfully.
