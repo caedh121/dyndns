@@ -152,7 +152,7 @@ def lambda_handler(
     LOGGER.debug("instance id: %s", str(instance_id) + lineno())
     ACCOUNT = event['account']
     region = event['region']
-    REGION = region
+    REGION = 'region'
     LOGGER.debug("region: %s", str(region) + lineno())
 
     # Only doing something if the state is running
