@@ -12,7 +12,7 @@ https://github.com/aws-samples/aws-lambda-ddns-function
 
   If the instance is running in a VPC with a custom dhcp option set with a dns domain name that matches a privated hosted zone created in route53,
      
-      1. Creates an 'A' record using the Tag "Name" value is created to the secondary IP,
+      1. Creates an 'A' record using the Tag "Name" value associated with the secondary IP,
          if no Tag "Name" then it uses private_DNS_name,
          if no secondary IP then it uses the primary IP
       2. If the PTR Zone doesnt exits, it creates the PTR zone, associates it with the VPC and creates A 'PTR" record to the DNS name,
