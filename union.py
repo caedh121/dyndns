@@ -398,9 +398,12 @@ with VPC %s %s", private_hosted_zone_id, vpc_id, lineno())
                                                ' with value: ' +
                                                str(reversed_ip_address))
                 except BaseException as err:
-                    publish_to_sns(SNS_CLIENT, ACCOUNT, REGION, "Unexpected error:" +
-                                   str(err) + lineno())
-
+                    #publish_to_sns(SNS_CLIENT, ACCOUNT, REGION, "Unexpected error:" +
+                    #               str(err) + lineno())
+                     if err is None:
+                            LOGGER.info("Unexpected Empty error")
+                     else:
+                        LOGGER.info("Unexpected error: "+ str(err))
 
 
 
