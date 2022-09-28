@@ -140,9 +140,9 @@ aws lambda create-function --function-name ddns_lambda --runtime python3.8 --rol
 
 ##### Step 3 – Create the CloudWatch Events Rule
 
-In this step, you create the CloudWatch Events rule that triggers the Lambda function whenever CloudWatch detects a change to the state of an EC2 instance.  You configure the rule to fire when any EC2 instance state changes to “running”, “shutting down”, or “stopped”.  Use the **aws events put-rule** command to create the rule and set the Lambda function as the execution target:
+In this step, you create the CloudWatch Events rule that triggers the Lambda function whenever CloudWatch detects a change to the state of an EC2 instance.  You configure the rule to fire when any EC2 instance state changes to “running”.  Use the **aws events put-rule** command to create the rule and set the Lambda function as the execution target:
 ```
-aws events put-rule --event-pattern "{\"source\":[\"aws.ec2\"],\"detail-type\":[\"EC2 Instance State-change Notification\"],\"detail\":{\"state\":[\"running\",\"shutting-down\",\"stopped\"]}}" --state ENABLED --name ec2_lambda_ddns_rule
+aws events put-rule --event-pattern "{\"source\":[\"aws.ec2\"],\"detail-type\":[\"EC2 Instance State-change Notification\"],\"detail\":{\"state\":[\"running\"]}}" --state ENABLED --name ec2_lambda_ddns_rule
 ```
 The output of the command returns the ARN to the newly created CloudWatch Events rule, named **ec2\_lambda\_ddns\_rule**. Save the ARN, as you will need it to associate the rule with the Lambda function and to set the appropriate Lambda permissions.
 
