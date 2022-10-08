@@ -75,20 +75,11 @@ def get_route53_client():
         print("Unexpected error: %s" % err)
 
 
-def get_ec2_client():
-    """
-    Get ec2 client
-    :return:
-    """
-    try:
-        return boto3.client('ec2')
-    except ClientError as err:
-        print("Unexpected error: %s" % err)
-
-
 def get_instance_name(fid):
     # When given an instance ID as str e.g. 'i-1234567', return the instance 'Name' from the name tag.
-    ec2 = boto3.resource('ec2')
+    rn=event['region']
+    print(rn)
+    ec2 = boto3.resource('ec2',region_name=(f'{rn}'))
     ec2instance = ec2.Instance(fid)
     instancename = ''
     for tags in ec2instance.tags:
@@ -112,7 +103,6 @@ def lambda_handler(
         event,
         context,
         dynamodb_client=get_dynamodb_client(),
-        compute=get_ec2_client(),
         route53=get_route53_client(),
         sns_client=get_sns_client()
 ):
@@ -132,7 +122,12 @@ def lambda_handler(
     LOGGER.info("event: %s", str(event) + lineno())
     LOGGER.info("context: %s", str(context) + lineno())
     SNS_CLIENT = sns_client
-
+    """
+    Get the source region of the event/instance, this way lambda will query the event source region,
+    in which the instance is running instead of querying its current region for an instance that doesnt exists
+    """
+    rn=event['region']
+    compute = boto3.client('ec2',region_name=(f'{rn}'))
     # Checking to make sure there is a dynamodb table named DDNS or we will create it
     tables = list_tables(dynamodb_client)
 
@@ -198,16 +193,30 @@ def lambda_handler(
         LOGGER.debug("reservations:"
                      " %s", str(instance['Reservations'][0]['Instances'][0]) + lineno())
 
+    """
+    Get the Private DNS and the Name tag value, if there is no Name tag, fallback to Private DNS name,
+    Pass the event source region, just like before (line 126) lambda needs to "know" the instance region, to properly
+    query that region in search for that instance, otherwise it will look for the instance in its current region
+    (the region in which lambda is running from)
+    """
     private_dns_name = instance['Reservations'][0]['Instances'][0]['PrivateDnsName']
-
+    
     try:
-        private_host_name = get_instance_name(f'{instance_id}')
+        ec2 = boto3.resource('ec2',region_name=(f'{rn}'))
+        ec2instance = ec2.Instance(instance_id)
+        private_host_name = ''
+        for tags in ec2instance.tags:
+            if tags["Key"] == 'Name':
+                private_host_name = tags["Value"]
     except:
         private_host_name = private_dns_name.split('.')[0]
 
     if private_host_name == '':
         private_host_name = private_dns_name.split('.')[0]
-
+    """
+    Get the secondary private IP address of the instance, if there is none
+    fallback to the primary private IP address
+    """
     try:
         private_ip = instance['Reservations'][0]['Instances'][0]['NetworkInterfaces'][0]['PrivateIpAddresses'][1]['PrivateIpAddress']
     except:
@@ -418,15 +427,12 @@ with VPC %s %s", private_hosted_zone_id, vpc_id, lineno())
 
 
 def get_instances(client, instance_id):
-    """
-    Get ec2 instance information
-    :return:
-    """
     try:
         return client.describe_instances(InstanceIds=[instance_id])
     except ClientError as err:
         publish_to_sns(SNS_CLIENT, ACCOUNT, REGION, "Unexpected error:" +
                        str(err) + lineno())
+
 
 
 def list_hosted_zones(client):
