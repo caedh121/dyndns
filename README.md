@@ -6,7 +6,7 @@ https://aws.amazon.com/blogs/compute/building-a-dynamic-dns-for-route-53-using-c
 
 https://github.com/aws-samples/aws-lambda-ddns-function
 
-##  Looking for a dynamic way to add A records to a Route private hosted zone, based on the value of the Tag Name, I have modified the original code to this purpose. Added cross region funtionality, this way we deploy lambda in one region and provide the service to all the regions in the account, instead of deploying one lambda function per region.
+##  Dynamically add A records to AWS Route53 private hosted zone, based on the value of the Tag Name, I have modified the original code to this purpose. Added cross region funtionality, this way we deploy lambda in one region and provide the service to all the regions in the account, instead of deploying one lambda function per region.
 
 
 - This script will perform the following functions.
