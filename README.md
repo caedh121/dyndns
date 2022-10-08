@@ -1,4 +1,4 @@
-# Building a Dynamic DNS for Route 53 using CloudWatch Events and Lambda
+# Building a Dynamic DNS for Route 53 using CloudWatch Events and Lambda in one region "to rule them all"
 
 Credits to   Jeremy Cowan, Efrain Fuentes and Bryan Liston from AWS
 
@@ -6,7 +6,8 @@ https://aws.amazon.com/blogs/compute/building-a-dynamic-dns-for-route-53-using-c
 
 https://github.com/aws-samples/aws-lambda-ddns-function
 
-##  We needed a dynamic way to add A records to a Route private hosted zone, based on the value of the Tag Name, I have modified the original code to this purpose. 
+##  Looking for a dynamic way to add A records to a Route private hosted zone, based on the value of the Tag Name, I have modified the original code to this purpose. Added cross region funtionality, this way we deploy lambda in one region and provide the service to all the regions in the account, instead of deploying one lambda function per region.
+
 
 - This script will perform the following functions.
 
@@ -154,10 +155,14 @@ Next, you add the permissions required for the CloudWatch Events rule to execute
 ```
 aws lambda add-permission --function-name ddns_lambda --statement-id 45 --action lambda:InvokeFunction --principal events.amazonaws.com --source-arn <enter-your-cloudwatch-events-rule-arn-here>
 ```
-##### Step 4 – Create the private hosted zone in Route 53
+##### Step 4 – Create the private hosted zone in Route 53 and associate each VPC with it.
 
 To create the private hosted zone in Route 53, follow the steps outlined in [Creating a Private Hosted Zone](http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-private-creating.html).
 
+To associate a VPC with a hosted zone run:
+```
+aws route53 associate-vpc-with-hosted-zone --hosted-zone-id YOURZONEIDHERE --vpc <VPCIDHERE>
+```
 ##### Step 5 – Create a DHCP options set and associate it with the VPC
 
 In this step, you create a new DHCP options set, and set the domain to be that of your private hosted zone.
@@ -166,7 +171,7 @@ aws ec2 create-dhcp-options --dhcp-configuration "Key=domain-name-servers,Values
 ```
 3) Next, update the intended VPC to use the newly-created DHCP options set. The previous command will return the DhcpOptionsId of the newly created DHCP options set
 ```
-aws associate-dhcp-options --dhcp-options-id <DhcpOptiosId> --vpc-id <the VPC id>
+aws associate-dhcp-options --dhcp-options-id <DhcpOptiosId> --vpc-id <VPCIDHERE>
 ```
 Note: You can use the same DHCP options set for all the VPCs in the same region.
 ##### Step 6 – Launching the EC2 instance and validating results
